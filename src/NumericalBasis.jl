@@ -6,6 +6,13 @@ module NumericalBasis
 
 using SyntaxTree, Reduce
 import Reduce: horner, factor, expand
+export floatset, optimal, roots
+
+function floatset(T::DataType,N;scale=x->x)
+    l = scale(eps(T))
+    u = scale(prevfloat(T(Inf)))
+    return l:(u-l)/(N-1):u
+end
 
 horner(x,a) = horner(x,a,1)
 horner(x,a::Array{<:Any,1},k) = k == length(a) ? a[k] : a[k] + x*horner(x,a,k+1)
@@ -16,11 +23,7 @@ factor(x,a::Array{<:Any,1},k) = k == length(a) ? x-a[k] : (x-a[k])*factor(x,a,k+
 expand(x,a) = expand(x,a,length(a))
 expand(x,a::Array{<:Any,1},k) = k == 1 ? a[k] : a[k]*x^(k-1) + expand(x,a,k-1)
 
-#export roots
-
 roots = factor
-
-export optimal
 
 function optimal(expr)
     h = horner(expr)
