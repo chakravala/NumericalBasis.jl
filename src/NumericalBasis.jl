@@ -1,12 +1,11 @@
-__precompile__()
+#__precompile__()
 module NumericalBasis
 
 #   This file is part of NumericalBasis.jl. It is licensed under the MIT license
 #   Copyright (C) 2018 Michael Reed
 
-using SyntaxTree, Reduce
-import Reduce: horner, factor, expand
-export floatset, optimal, roots
+using SyntaxTree, ForceImport, Reduce
+export floatset, optimal, roots, polyhorner, polyfactors, polyexpand
 
 function floatset(T::DataType,N;scale=x->x)
     l = scale(eps(T))
@@ -14,14 +13,14 @@ function floatset(T::DataType,N;scale=x->x)
     return l:(u-l)/(N-1):u
 end
 
-horner(x,a) = horner(x,a,1)
-horner(x,a::Array{<:Any,1},k) = k == length(a) ? a[k] : a[k] + x*horner(x,a,k+1)
+polyhorner(x,a) = polyhorner(x,a,1)
+polyhorner(x,a::Array{<:Any,1},k) = k==length(a) ? a[k] : Algebra.:+(a[k],Algebra.:*(x,polyhorner(x,a,k+1)))
 
-factor(x,a) = factor(x,a,1)
-factor(x,a::Array{<:Any,1},k) = k == length(a) ? x-a[k] : (x-a[k])*factor(x,a,k+1)
+polyfactors(x,a) = polyfactors(x,a,1)
+polyfactors(x,a::Array{<:Any,1},k) = k==length(a) ? Algebra.:-(x,a[k]) : Algebra.:*(Algebra.:-(x,a[k]),polyfactors(x,a,k+1))
 
-expand(x,a) = expand(x,a,length(a))
-expand(x,a::Array{<:Any,1},k) = k == 1 ? a[k] : a[k]*x^(k-1) + expand(x,a,k-1)
+polyexpand(x,a) = polyexpand(x,a,length(a))
+polyexpand(x,a::Array{<:Any,1},k) = k==1 ? a[k] : Algebra.:+(Algebra.:*(a[k],Algebra.:^(x,k-1)),polyexpand(x,a,k-1))
 
 roots = factor
 
