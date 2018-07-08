@@ -1,0 +1,7 @@
+name = "NumericalBasis"
+uuid = "e0edb54e-81e9-11e8-261b-b38411c64f58"
+
+[deps]
+ForceImport = "9dda63f9-cce7-5873-89fa-eccbb2fffcde"
+Reduce = "93e0c654-6965-5f22-aba9-9c1ae6b3c259"
+SyntaxTree = "a4af3ec5-f8ac-5fed-a759-c2e80b4d74cb"
